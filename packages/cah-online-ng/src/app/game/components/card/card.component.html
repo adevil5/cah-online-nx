@@ -1,11 +1,51 @@
-<div class="flex h-80 w-60 flex-col rounded-lg bg-white p-6 shadow-lg">
-  <p class="mb-4 text-2xl font-bold">Your Card Title</p>
-  <p class="text-gray-600">
+<div class="flex h-[21rem] w-60 flex-col rounded-lg bg-white p-5 shadow-lg">
+  <p class="text-lg font-bold leading-6 text-black">
     {{ card.text }}
   </p>
   <div class="flex-grow"></div>
   <div class="mt-6 flex items-center">
-    <div class="mr-2 h-8 w-8 rounded-full bg-gray-300"></div>
-    <div class="h-4 w-24 rounded-full bg-gray-300"></div>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="300"
+      height="100"
+      viewBox="-7 20 165 65"
+      class="h-8 w-8"
+    >
+      <!-- First Card -->
+      <rect
+        x="2"
+        y="15"
+        width="80"
+        height="80"
+        fill="black"
+        stroke="white"
+        stroke-width="2"
+        transform="rotate(-15, 50, 50)"
+      />
+
+      <!-- Second Card -->
+      <rect
+        x="35"
+        y="10"
+        width="80"
+        height="80"
+        fill="white"
+        stroke="black"
+        stroke-width="2"
+      />
+
+      <!-- Third Card -->
+      <rect
+        x="68"
+        y="15"
+        width="80"
+        height="80"
+        fill="white"
+        stroke="black"
+        stroke-width="2"
+        transform="rotate(15, 110, 50)"
+      />
+    </svg>
+    <div class="ml-1 text-[0.6rem] font-bold">Cards Against Humanity</div>
   </div>
 </div>

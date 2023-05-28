@@ -10,7 +10,13 @@ import { CardComponent } from '../card/card.component';
   standalone: true,
   imports: [CardComponent, CommonModule],
   templateUrl: './user-hand.component.html',
-  styles: [],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserHandComponent {

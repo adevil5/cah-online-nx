@@ -7,6 +7,6 @@ import { UserHandComponent } from './game/components/user-hand/user-hand.compone
   imports: [UserHandComponent, RouterModule],
   selector: 'cah-root',
   templateUrl: './app.component.html',
-  styles: [''],
+  styles: [],
 })
 export class AppComponent {}
