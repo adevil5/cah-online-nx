@@ -3,46 +3,51 @@ import {
   Component,
   Input,
   OnInit,
+  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Profile } from '../../../game/models/profile.model';
 import { AuthSession } from '@supabase/supabase-js';
-import { SupabaseService } from '../../../game/services/supabase.service';
-import { FormBuilder } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cah-account',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
   templateUrl: './account.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent implements OnInit {
+  private authService = inject(AuthService);
+  private formBuilder = inject(FormBuilder);
+
   loading = false;
   profile!: Profile;
 
-  @Input()
-  session!: AuthSession;
+  @Input({ required: true }) session!: AuthSession;
 
   updateProfileForm = this.formBuilder.group({
     username: '',
-    website: '',
     avatarUrl: '',
   });
-
-  constructor(
-    private readonly supabase: SupabaseService,
-    private formBuilder: FormBuilder
-  ) {}
 
   async ngOnInit(): Promise<void> {
     await this.getProfile();
 
-    const { username, website, avatarUrl } = this.profile;
+    const { username, avatarUrl } = this.profile;
     this.updateProfileForm.patchValue({
       username: username,
-      website: website,
       avatarUrl: avatarUrl,
     });
   }
@@ -55,7 +60,7 @@ export class AccountComponent implements OnInit {
         data: profile,
         error,
         status,
-      } = await this.supabase.profile(user);
+      } = await this.authService.profile(user);
 
       if (error && status !== 406) {
         throw error;
@@ -66,9 +71,7 @@ export class AccountComponent implements OnInit {
           id: user.id,
           updatedAt: null,
           username: profile?.username ?? null,
-          fullName: null,
           avatarUrl: profile?.avatar_url ?? null,
-          website: profile?.website ?? null,
         };
         this.profile = p;
       }
@@ -87,13 +90,11 @@ export class AccountComponent implements OnInit {
       const { user } = this.session;
 
       const username = this.updateProfileForm.value.username as string;
-      const website = this.updateProfileForm.value.website as string;
       const avatar_url = this.updateProfileForm.value.avatarUrl as string;
 
-      const { error } = await this.supabase.updateProfile({
+      const { error } = await this.authService.updateProfile({
         id: user.id,
         username,
-        website,
         avatarUrl: avatar_url,
       });
       if (error) throw error;
@@ -107,6 +108,6 @@ export class AccountComponent implements OnInit {
   }
 
   async signOut() {
-    await this.supabase.signOut();
+    await this.authService.signOut();
   }
 }

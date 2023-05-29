@@ -1,20 +1,25 @@
-<div class="row flex-center flex">
-  <div class="col-6 form-widget" aria-live="polite">
-    <h1 class="header">Supabase + Angular</h1>
-    <p class="description">Sign in via magic link with your email below</p>
-    <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="form-widget">
-      <div>
-        <label for="email">Email</label>
+<div class="flex items-center justify-center">
+  <div class="w-1/2">
+    <p>Sign in via magic link with your email below</p>
+    <form class="mt-8" [formGroup]="signInForm" (ngSubmit)="onSubmit()">
+      <mat-form-field class="w-full">
+        <mat-label>Email</mat-label>
         <input
+          matInput
           id="email"
           formControlName="email"
-          class="inputField"
           type="email"
           placeholder="Your email"
         />
-      </div>
+      </mat-form-field>
       <div>
-        <button type="submit" class="button block" [disabled]="loading">
+        <button
+          mat-raised-button
+          color="primary"
+          type="submit"
+          class="mt-2 w-full"
+          [disabled]="loading"
+        >
           {{ loading ? 'Loading' : 'Send magic link' }}
         </button>
       </div>

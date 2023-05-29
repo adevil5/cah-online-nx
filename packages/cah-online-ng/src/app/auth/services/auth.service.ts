@@ -8,12 +8,12 @@ import {
 } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Database } from '../../../generated/supabase';
-import { Profile } from '../models/profile.model';
+import { Profile } from '../../game/models/profile.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SupabaseService {
+export class AuthService {
   private supabase = createClient<Database>(
     environment.supabaseUrl,
     environment.supabasePublicAnonKey
@@ -30,7 +30,7 @@ export class SupabaseService {
   profile(user: User) {
     return this.supabase
       .from('profile')
-      .select(`username, website, avatar_url`)
+      .select(`username, avatar_url`)
       .eq('id', user.id)
       .single();
   }
@@ -54,9 +54,7 @@ export class SupabaseService {
       id: profile.id,
       updated_at: new Date().toUTCString(),
       username: profile.username,
-      full_name: profile.fullName,
       avatar_url: profile.avatarUrl,
-      website: profile.website,
     };
 
     return this.supabase.from('profile').upsert(update);

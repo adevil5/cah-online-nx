@@ -21,7 +21,13 @@ import { CardComponent } from '../card/card.component';
 })
 export class UserHandComponent {
   gameService = inject(GameService);
-  baseCardPack = toSignal(from(this.gameService.drawRandomWhiteCards(10)), {
+  randomWhiteCards = toSignal(from(this.gameService.drawRandomCards(3, true)), {
     initialValue: [],
   });
+  randomBlackCards = toSignal(
+    from(this.gameService.drawRandomCards(3, false)),
+    {
+      initialValue: [],
+    }
+  );
 }

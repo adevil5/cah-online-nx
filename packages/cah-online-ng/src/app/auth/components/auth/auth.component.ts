@@ -1,12 +1,21 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder } from '@angular/forms';
-import { SupabaseService } from '../../../game/services/supabase.service';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'cah-auth',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
   templateUrl: './auth.component.html',
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -19,7 +28,7 @@ export class AuthComponent {
   });
 
   constructor(
-    private readonly supabase: SupabaseService,
+    private readonly supabase: AuthService,
     private readonly formBuilder: FormBuilder
   ) {}
 

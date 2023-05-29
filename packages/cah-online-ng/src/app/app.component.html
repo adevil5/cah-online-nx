@@ -1,1 +1,10 @@
+<cah-header></cah-header>
+<div class="container">
+  <ng-container *ngIf="session(); else auth">
+    <cah-account [session]="sessionNotNull()"></cah-account>
+  </ng-container>
+  <ng-template #auth>
+    <cah-auth></cah-auth>
+  </ng-template>
+</div>
 <cah-user-hand class="bg-stone-50 p-8" /> <router-outlet></router-outlet>

@@ -1,9 +1,11 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { createClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Database } from '../../../generated/supabase';
 import { Card } from '../models/card.model';
 import { CardPack } from '../models/card-pack.model';
+import { AuthService } from '../../auth/services/auth.service';
+import { Game } from '../models/game.model';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +15,8 @@ export class GameService {
     environment.supabaseUrl,
     environment.supabasePublicAnonKey
   );
+
+  private authService = inject(AuthService);
 
   getAllCardPacks() {
     return this.supabase.from('card_pack').select('*');
@@ -37,9 +41,9 @@ export class GameService {
       });
   }
 
-  drawRandomWhiteCards(n: number) {
+  drawRandomCards(n: number, is_white_card?: boolean) {
     return this.supabase
-      .rpc('get_random_white_cards', { n })
+      .rpc('get_random_cards', { n, is_white_card })
       .then(({ data, error }) => {
         if (error) {
           throw error;
@@ -56,5 +60,35 @@ export class GameService {
         }
         return cards;
       });
+  }
+
+  createNewGame(gameDeckId: string) {
+    if (this.authService.session) {
+      const hostUserId = this.authService.session?.user.id;
+
+      this.supabase
+        .from('game')
+        .insert({
+          host_user_id: hostUserId,
+          game_deck_id: gameDeckId,
+          state: 'waiting',
+        })
+        .select()
+        .single()
+        .then(({ data, error }) => {
+          if (error) {
+            throw error;
+          }
+          const game: Game = {
+            id: data.id,
+            gameDeckId: data.game_deck_id,
+            hostUserId: data.host_user_id,
+            state: data.state as 'waiting' | 'inProgress' | 'completed',
+            createdAt: new Date(data.created_at),
+            updatedAt: new Date(data.updated_at),
+          };
+          return game;
+        });
+    }
   }
 }

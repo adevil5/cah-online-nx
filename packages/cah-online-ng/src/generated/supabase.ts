@@ -222,9 +222,10 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      get_random_white_cards: {
+      get_random_cards: {
         Args: {
           n: number
+          is_white_card?: boolean
         }
         Returns: {
           card_pack_id: string | null

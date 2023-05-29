@@ -1,6 +1,15 @@
-<div class="flex h-[21rem] w-60 flex-col rounded-lg bg-white p-5 shadow-lg">
-  <p class="text-lg font-bold leading-6 text-black">
-    {{ card.text }}
+<div
+  class="flex h-[21rem] w-60 flex-col rounded-lg p-5 shadow-lg"
+  [ngClass]="{ 'bg-white': card.isWhiteCard, 'bg-black': !card.isWhiteCard }"
+>
+  <p
+    class="text-xl font-bold leading-6 text-black"
+    [ngClass]="{
+      'text-black': card.isWhiteCard,
+      'text-white': !card.isWhiteCard
+    }"
+  >
+    {{ card.text | underscoreExpansion }}
   </p>
   <div class="flex-grow"></div>
   <div class="mt-6 flex items-center">
@@ -46,6 +55,14 @@
         transform="rotate(15, 110, 50)"
       />
     </svg>
-    <div class="ml-1 text-[0.6rem] font-bold">Cards Against Humanity</div>
+    <div
+      class="ml-1 text-[0.6rem] font-bold"
+      [ngClass]="{
+        'text-black': card.isWhiteCard,
+        'text-white': !card.isWhiteCard
+      }"
+    >
+      Cards Against Humanity
+    </div>
   </div>
 </div>
