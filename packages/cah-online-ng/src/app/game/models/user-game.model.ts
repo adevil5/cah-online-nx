@@ -2,7 +2,7 @@ export interface UserGame {
   id: string;
   userId: string;
   gameId: string;
-  score: number;
+  enableAutoplay: boolean;
   createdAt: Date;
   updatedAt: Date;
 }

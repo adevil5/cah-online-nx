@@ -41,9 +41,23 @@ export class AuthService {
     return this.supabase.auth.onAuthStateChange(callback);
   }
 
-  signIn(email: string) {
-    return this.supabase.auth.signInWithOtp({ email });
+  signUp(email: string, password: string) {
+    return this.supabase.auth.signUp({
+      email,
+      password,
+    });
   }
+
+  signIn(email: string, password: string) {
+    return this.supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+  }
+
+  // signInWithGoogle() {
+  //   return this.supabase.auth.signInWithOAuth({ provider: 'google' });
+  // }
 
   signOut() {
     return this.supabase.auth.signOut();

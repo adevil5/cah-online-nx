@@ -4,31 +4,22 @@
   "projectType": "application",
   "prefix": "cah",
   "sourceRoot": "packages/cah-online-ng/src",
-  "tags": [
-    "type:app"
-  ],
+  "tags": ["type:app"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/packages/cah-online-ng",
         "index": "packages/cah-online-ng/src/index.html",
         "main": "packages/cah-online-ng/src/main.ts",
-        "polyfills": [
-          "zone.js"
-        ],
+        "polyfills": ["zone.js"],
         "tsConfig": "packages/cah-online-ng/tsconfig.app.json",
         "assets": [
           "packages/cah-online-ng/src/favicon.ico",
           "packages/cah-online-ng/src/assets"
         ],
-        "styles": [
-          "@angular/material/prebuilt-themes/purple-green.css",
-          "packages/cah-online-ng/src/styles.css"
-        ],
+        "styles": ["packages/cah-online-ng/src/styles.scss"],
         "scripts": []
       },
       "configurations": {
@@ -101,9 +92,7 @@
     },
     "lint": {
       "executor": "@nx/linter:eslint",
-      "outputs": [
-        "{options.outputFile}"
-      ],
+      "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
           "packages/cah-online-ng/**/*.ts",
@@ -113,9 +102,7 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/{projectRoot}"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/cah-online-ng/jest.config.ts",
         "passWithNoTests": true

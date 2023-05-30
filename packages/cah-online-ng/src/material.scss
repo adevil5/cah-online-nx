@@ -1,0 +1,87 @@
+@use '@angular/material' as mat;
+
+@include mat.core();
+
+$violet-palette: (
+  50: #f5f3ff,
+  100: #f3e8ff,
+  200: #e9d5ff,
+  300: #c4b5fd,
+  400: #a78bfa,
+  500: #8b5cf6,
+  600: #7c3aed,
+  700: #6d28d9,
+  800: #5b21b6,
+  900: #4c1d95,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  ),
+);
+
+$zinc-palette: (
+  50: #fafafa,
+  100: #f4f4f5,
+  200: #d4d4d8,
+  300: #d6d3d1,
+  400: #a1a1aa,
+  500: #71717a,
+  600: #52525b,
+  700: #3f3f46,
+  800: #27272a,
+  900: #18181b,
+  contrast: (
+    50: rgba(black, 0.87),
+    100: rgba(black, 0.87),
+    200: rgba(black, 0.87),
+    300: rgba(black, 0.87),
+    400: rgba(black, 0.87),
+    500: rgba(black, 0.87),
+    600: white,
+    700: white,
+    800: white,
+    900: white,
+  ),
+);
+
+$my-primary: mat.define-palette($violet-palette, 500, 100, 500);
+$my-accent: mat.define-palette($zinc-palette, 300, 100, 500);
+
+$my-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $my-primary,
+      accent: $my-accent,
+    ),
+    typography: mat.define-typography-config(),
+    density: 0,
+  )
+);
+
+@include mat.core-theme($my-theme);
+@include mat.all-component-themes($my-theme);
+
+.mdc-text-field--filled:not(.mdc-text-field--disabled) {
+  background-color: map-get($zinc-palette, 200);
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled)
+  .mdc-text-field__input::placeholder {
+  color: map-get($zinc-palette, 400);
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled) .mdc-floating-label {
+  color: map-get($zinc-palette, 400);
+}
+
+.mdc-text-field:not(.mdc-text-field--disabled) .mdc-text-field__input {
+  color: rgba(black, 0.87);
+}

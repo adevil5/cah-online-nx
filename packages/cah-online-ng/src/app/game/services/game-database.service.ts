@@ -10,7 +10,7 @@ import { Game } from '../models/game.model';
 @Injectable({
   providedIn: 'root',
 })
-export class GameService {
+export class GameDatabaseService {
   private supabase = createClient<Database>(
     environment.supabaseUrl,
     environment.supabasePublicAnonKey
@@ -83,7 +83,9 @@ export class GameService {
             id: data.id,
             gameDeckId: data.game_deck_id,
             hostUserId: data.host_user_id,
-            state: data.state as 'waiting' | 'inProgress' | 'completed',
+            state: data.state as Game['state'],
+            currentRoundId: data.current_round_id,
+            enableGhostPlayer: data.enable_ghost_player,
             createdAt: new Date(data.created_at),
             updatedAt: new Date(data.updated_at),
           };

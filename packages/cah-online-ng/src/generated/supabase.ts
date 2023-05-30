@@ -52,6 +52,8 @@ export interface Database {
       game: {
         Row: {
           created_at: string
+          current_round_id: string | null
+          enable_ghost_player: boolean
           game_deck_id: string
           host_user_id: string
           id: string
@@ -60,6 +62,8 @@ export interface Database {
         }
         Insert: {
           created_at?: string
+          current_round_id?: string | null
+          enable_ghost_player?: boolean
           game_deck_id: string
           host_user_id: string
           id?: string
@@ -68,6 +72,8 @@ export interface Database {
         }
         Update: {
           created_at?: string
+          current_round_id?: string | null
+          enable_ghost_player?: boolean
           game_deck_id?: string
           host_user_id?: string
           id?: string
@@ -75,7 +81,7 @@ export interface Database {
           updated_at?: string
         }
       }
-      game_deck: {
+      game_card: {
         Row: {
           card_id: string
           card_location: string
@@ -113,8 +119,7 @@ export interface Database {
           game_round_number: number
           id: string
           updated_at: string
-          winning_card_id: string | null
-          winning_user_id: string | null
+          winning_user_game_id: string | null
         }
         Insert: {
           black_card_id: string
@@ -124,8 +129,7 @@ export interface Database {
           game_round_number?: number
           id?: string
           updated_at?: string
-          winning_card_id?: string | null
-          winning_user_id?: string | null
+          winning_user_game_id?: string | null
         }
         Update: {
           black_card_id?: string
@@ -135,86 +139,82 @@ export interface Database {
           game_round_number?: number
           id?: string
           updated_at?: string
-          winning_card_id?: string | null
-          winning_user_id?: string | null
+          winning_user_game_id?: string | null
         }
       }
       profile: {
         Row: {
           avatar_url: string | null
-          full_name: string | null
           id: string
-          updated_at: string | null
+          updated_at: string
           username: string | null
-          website: string | null
         }
         Insert: {
           avatar_url?: string | null
-          full_name?: string | null
           id: string
-          updated_at?: string | null
+          updated_at?: string
           username?: string | null
-          website?: string | null
         }
         Update: {
           avatar_url?: string | null
-          full_name?: string | null
           id?: string
-          updated_at?: string | null
+          updated_at?: string
           username?: string | null
-          website?: string | null
         }
       }
       user_game: {
         Row: {
           created_at: string
+          enable_autoplay: boolean
           game_id: string
           id: string
-          score: number
           updated_at: string
           user_id: string
         }
         Insert: {
           created_at?: string
+          enable_autoplay?: boolean
           game_id: string
           id?: string
-          score?: number
           updated_at?: string
           user_id: string
         }
         Update: {
           created_at?: string
+          enable_autoplay?: boolean
           game_id?: string
           id?: string
-          score?: number
           updated_at?: string
           user_id?: string
         }
       }
-      user_game_round: {
+      user_game_round_card: {
         Row: {
           created_at: string
           game_round_id: string
           id: string
           played_card_id: string | null
+          played_card_order: number
           updated_at: string
-          user_id: string
+          user_game_id: string
         }
         Insert: {
           created_at?: string
           game_round_id: string
           id?: string
           played_card_id?: string | null
+          played_card_order?: number
           updated_at?: string
-          user_id: string
+          user_game_id: string
         }
         Update: {
           created_at?: string
           game_round_id?: string
           id?: string
           played_card_id?: string | null
+          played_card_order?: number
           updated_at?: string
-          user_id?: string
+          user_game_id?: string
         }
       }
     }

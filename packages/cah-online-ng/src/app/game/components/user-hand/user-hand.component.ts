@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { CommonModule } from '@angular/common';
-import { GameService } from '../../services/game.service';
+import { GameDatabaseService } from '../../services/game-database.service';
 import { from } from 'rxjs';
 import { CardComponent } from '../card/card.component';
 
@@ -20,7 +20,7 @@ import { CardComponent } from '../card/card.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserHandComponent {
-  gameService = inject(GameService);
+  gameService = inject(GameDatabaseService);
   randomWhiteCards = toSignal(from(this.gameService.drawRandomCards(3, true)), {
     initialValue: [],
   });

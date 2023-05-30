@@ -1,9 +1,10 @@
 <div class="mt-4 flex items-center justify-center">
-  <form
-    [formGroup]="updateProfileForm"
-    (ngSubmit)="updateProfile()"
-    class="form-widget"
-  >
+  <form [formGroup]="updateProfileForm" (ngSubmit)="updateProfile()">
+    <cah-avatar
+      [avatarUrl]="this.avatarUrlSignal()"
+      (upload)="updateAvatar($event)"
+    >
+    </cah-avatar>
     <mat-form-field class="block w-full">
       <mat-label>Email</mat-label>
       <input

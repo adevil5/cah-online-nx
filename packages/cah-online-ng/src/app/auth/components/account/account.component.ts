@@ -4,15 +4,18 @@ import {
   Input,
   OnInit,
   inject,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Profile } from '../../../game/models/profile.model';
 import { AuthSession } from '@supabase/supabase-js';
 import { AuthService } from '../../services/auth.service';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { AvatarComponent } from '../avatar/avatar.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'cah-account',
@@ -23,10 +26,10 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    AvatarComponent,
   ],
   templateUrl: './account.component.html',
   styles: [],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent implements OnInit {
   private authService = inject(AuthService);
@@ -37,9 +40,10 @@ export class AccountComponent implements OnInit {
 
   @Input({ required: true }) session!: AuthSession;
 
+  avatarUrlFc = new FormControl('');
   updateProfileForm = this.formBuilder.group({
     username: '',
-    avatarUrl: '',
+    avatarUrl: this.avatarUrlFc,
   });
 
   async ngOnInit(): Promise<void> {
@@ -68,7 +72,6 @@ export class AccountComponent implements OnInit {
 
       if (profile) {
         const p: Profile = {
-          id: user.id,
           updatedAt: null,
           username: profile?.username ?? null,
           avatarUrl: profile?.avatar_url ?? null,
@@ -109,5 +112,20 @@ export class AccountComponent implements OnInit {
 
   async signOut() {
     await this.authService.signOut();
+  }
+
+  avatarUrlSignal = toSignal(this.avatarUrlFc.valueChanges, {
+    initialValue: null,
+  });
+
+  effectFn = effect(() => {
+    console.log('avatarUrlSignal', this.avatarUrlSignal());
+  });
+
+  async updateAvatar(event: string): Promise<void> {
+    this.updateProfileForm.patchValue({
+      avatarUrl: event,
+    });
+    await this.updateProfile();
   }
 }
