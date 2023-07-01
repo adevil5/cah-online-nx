@@ -1,25 +1,22 @@
 {
-  "name": "cah-online-ng",
+  "name": "cah-ng",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "cah",
-  "sourceRoot": "packages/cah-online-ng/src",
+  "sourceRoot": "apps/cah-ng/src",
   "tags": ["type:app"],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/cah-online-ng",
-        "index": "packages/cah-online-ng/src/index.html",
-        "main": "packages/cah-online-ng/src/main.ts",
+        "outputPath": "dist/apps/cah-ng",
+        "index": "apps/cah-ng/src/index.html",
+        "main": "apps/cah-ng/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "packages/cah-online-ng/tsconfig.app.json",
-        "assets": [
-          "packages/cah-online-ng/src/favicon.ico",
-          "packages/cah-online-ng/src/assets"
-        ],
-        "styles": ["packages/cah-online-ng/src/styles.scss"],
+        "tsConfig": "apps/cah-ng/tsconfig.app.json",
+        "assets": ["apps/cah-ng/src/favicon.ico", "apps/cah-ng/src/assets"],
+        "styles": ["apps/cah-ng/src/styles.css"],
         "scripts": []
       },
       "configurations": {
@@ -39,8 +36,8 @@
           "outputHashing": "all",
           "fileReplacements": [
             {
-              "replace": "packages/cah-online-ng/src/environments/environment.ts",
-              "with": "packages/cah-online-ng/src/environments/environment.production.ts"
+              "replace": "apps/cah-ng/src/environments/environment.ts",
+              "with": "apps/cah-ng/src/environments/environment.production.ts"
             }
           ]
         },
@@ -73,13 +70,13 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "browserTarget": "cah-online-ng:build:production"
+          "browserTarget": "cah-ng:build:production"
         },
         "development": {
-          "browserTarget": "cah-online-ng:build:development"
+          "browserTarget": "cah-ng:build:development"
         },
         "local": {
-          "browserTarget": "cah-online-ng:build:local"
+          "browserTarget": "cah-ng:build:local"
         }
       },
       "defaultConfiguration": "local"
@@ -87,7 +84,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "browserTarget": "cah-online-ng:build"
+        "browserTarget": "cah-ng:build"
       }
     },
     "lint": {
@@ -117,7 +114,7 @@
     "serve-static": {
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "cah-online-ng:build"
+        "buildTarget": "cah-ng:build"
       }
     },
     "generate-supabase-types": {

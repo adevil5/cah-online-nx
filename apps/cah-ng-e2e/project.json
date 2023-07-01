@@ -1,22 +1,22 @@
 {
-  "name": "cah-online-ng-e2e",
+  "name": "cah-ng-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/cah-online-ng-e2e/src",
+  "sourceRoot": "apps/cah-ng-e2e/src",
   "projectType": "application",
   "targets": {
     "e2e": {
       "executor": "@nx/cypress:cypress",
       "options": {
-        "cypressConfig": "packages/cah-online-ng-e2e/cypress.config.ts",
-        "devServerTarget": "cah-online-ng:serve:development",
+        "cypressConfig": "apps/cah-ng-e2e/cypress.config.ts",
+        "devServerTarget": "cah-ng:serve:development",
         "testingType": "e2e"
       },
       "configurations": {
         "production": {
-          "devServerTarget": "cah-online-ng:serve:production"
+          "devServerTarget": "cah-ng:serve:production"
         },
         "ci": {
-          "devServerTarget": "cah-online-ng:serve-static"
+          "devServerTarget": "cah-ng:serve-static"
         }
       }
     },
@@ -24,10 +24,10 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/cah-online-ng-e2e/**/*.{js,ts}"]
+        "lintFilePatterns": ["apps/cah-ng-e2e/**/*.{js,ts}"]
       }
     }
   },
   "tags": [],
-  "implicitDependencies": ["cah-online-ng"]
+  "implicitDependencies": ["cah-ng"]
 }
