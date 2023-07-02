@@ -48,6 +48,36 @@
         "command": "npx supabase stop",
         "cwd": "libs/cah-db"
       }
+    },
+    "create-local-snapshot": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node libs/cah-db/src/create-snapshot-of-local.mjs"],
+        "parallel": false
+      }
+    },
+    "create-prod-snapshot": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node libs/cah-db/src/create-snapshot-of-prod.mjs"],
+        "parallel": false
+      }
+    },
+    "restore-snapshot-to-local-db": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": ["node libs/cah-db/src/restore-snapshot.mjs"],
+        "parallel": false
+      }
+    },
+    "clear-local-db-data": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -p 54322 -f libs/cah-db/supabase/clear-db.sql"
+        ],
+        "parallel": false
+      }
     }
   },
   "tags": []
