@@ -10,7 +10,8 @@ const month = String(date.getMonth() + 1).padStart(2, '0'); // gets the month (0
 const day = String(date.getDate()).padStart(2, '0'); // gets the day of the month (1-31), converts it to a string, and pads it with a 0 if necessary
 const hours = String(date.getHours()).padStart(2, '0'); // gets the hours (0-23), converts it to a string, and pads it with a 0 if necessary
 const minutes = String(date.getMinutes()).padStart(2, '0'); // gets the minutes (0-59), converts it to a string, and pads it with a 0 if necessary
-const timestamp = `${year}${month}${day}${hours}${minutes}`;
+const seconds = String(date.getSeconds()).padStart(2, '0'); // gets the seconds (0-59), converts it to a string, and pads it with a 0 if necessary
+const timestamp = `${year}${month}${day}${hours}${minutes}${seconds}`;
 
 const dumpCommand = `pg_dump -h ${POSTGRES_HOST} -p 5432 -U postgres -w -F p -b -v -f libs/cah-db/supabase/snapshots/prod/${timestamp}.sql --data-only -t public.card`;
 

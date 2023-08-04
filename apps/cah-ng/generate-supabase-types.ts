@@ -6,7 +6,7 @@ dotenv.config();
 
 // Run the command
 const supabaseProjectRef = process.env['SUPABASE_PROJECT_REF'];
-const command = `npx supabase gen types typescript --project-id "${supabaseProjectRef}" --schema public > packages/cah-online-ng/src/generated/supabase.ts`;
+const command = `npx supabase gen types typescript --project-id "${supabaseProjectRef}" --schema public > apps/cah-online-ng/src/generated/supabase.ts`;
 
 try {
   execSync(command, { stdio: 'inherit' });

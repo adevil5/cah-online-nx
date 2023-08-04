@@ -3,7 +3,7 @@ export default {
   displayName: 'cah-ng',
   preset: '../../jest.preset.js',
   setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
-  coverageDirectory: '../../coverage/packages/cah-online-ng',
+  coverageDirectory: '../../coverage/apps/cah-online-ng',
   transform: {
     '^.+\\.(ts|mjs|js|html)$': [
       'jest-preset-angular',

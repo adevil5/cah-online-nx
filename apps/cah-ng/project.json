@@ -50,8 +50,8 @@
           "namedChunks": true,
           "fileReplacements": [
             {
-              "replace": "packages/cah-online-ng/src/environments/environment.ts",
-              "with": "packages/cah-online-ng/src/environments/environment.development.ts"
+              "replace": "apps/cah-online-ng/src/environments/environment.ts",
+              "with": "apps/cah-online-ng/src/environments/environment.development.ts"
             }
           ]
         },
@@ -92,8 +92,8 @@
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
-          "packages/cah-online-ng/**/*.ts",
-          "packages/cah-online-ng/**/*.html"
+          "apps/cah-online-ng/**/*.ts",
+          "apps/cah-online-ng/**/*.html"
         ]
       }
     },
@@ -101,7 +101,7 @@
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "packages/cah-online-ng/jest.config.ts",
+        "jestConfig": "apps/cah-online-ng/jest.config.ts",
         "passWithNoTests": true
       },
       "configurations": {
@@ -118,7 +118,7 @@
       }
     },
     "generate-supabase-types": {
-      "command": "node --unhandled-rejections=strict -r ts-node/register packages/cah-online-ng/generate-supabase-types.ts"
+      "command": "node --unhandled-rejections=strict -r ts-node/register apps/cah-online-ng/generate-supabase-types.ts"
     }
   }
 }

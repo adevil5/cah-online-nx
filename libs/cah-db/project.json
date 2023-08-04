@@ -49,6 +49,55 @@
         "cwd": "libs/cah-db"
       }
     },
+    "db-pull": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx supabase db pull",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "db-remote-commit": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "supabase db remote commit",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "db-dump": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node src/db-dump.ts",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "db-restore": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "supabase db restore --db-url $DATABASE_URL -f backup.sql",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "create-migration-from-diff": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx supabase db diff --use-migra -f initial_schema",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "create-empty-migration": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx supabase migration new create_employees_table",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "db-reset": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx supabase db reset",
+        "cwd": "libs/cah-db"
+      }
+    },
     "create-local-snapshot": {
       "executor": "nx:run-commands",
       "options": {
