@@ -1,10 +1,11 @@
 import { Injectable, inject } from '@angular/core';
 import { createClient } from '@supabase/supabase-js';
+
+import { Database } from 'cah-db';
 import { environment } from '../../../environments/environment';
-import { Database } from '../../../generated/supabase';
-import { Card } from '../models/card.model';
-import { CardPack } from '../models/card-pack.model';
 import { AuthService } from '../../auth/services/auth.service';
+import { CardPack } from '../models/card-pack.model';
+import { Card } from '../models/card.model';
 import { Game } from '../models/game.model';
 
 @Injectable({

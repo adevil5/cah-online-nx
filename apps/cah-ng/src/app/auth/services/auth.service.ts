@@ -7,7 +7,7 @@ import {
   User,
 } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
-import { Database } from '../../../generated/supabase';
+import { Database } from 'cah-db';
 import { Profile } from '../../game/models/profile.model';
 
 @Injectable({
