@@ -116,9 +116,6 @@
       "options": {
         "buildTarget": "cah-ng:build"
       }
-    },
-    "generate-supabase-types": {
-      "command": "node --unhandled-rejections=strict -r ts-node/register apps/cah-online-ng/generate-supabase-types.ts"
     }
   }
 }

@@ -11,7 +11,8 @@
         "outputPath": "dist/libs/cah-db",
         "main": "libs/cah-db/src/index.ts",
         "tsConfig": "libs/cah-db/tsconfig.lib.json",
-        "assets": ["libs/cah-db/*.md"]
+        "assets": ["libs/cah-db/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
       }
     },
     "lint": {
@@ -36,6 +37,7 @@
       }
     },
     "start": {
+      "description": "Start the Supabase local development stack.",
       "executor": "nx:run-commands",
       "options": {
         "command": "npx supabase start",
@@ -43,89 +45,89 @@
       }
     },
     "stop": {
+      "description": "Stop the Supabase local development stack.",
       "executor": "nx:run-commands",
       "options": {
         "command": "npx supabase stop",
         "cwd": "libs/cah-db"
       }
     },
-    "db-pull": {
+    "gen:types:local": {
+      "description": "Stop the Supabase local development stack.",
       "executor": "nx:run-commands",
       "options": {
-        "command": "npx supabase db pull",
+        "command": "npx supabase gen types typescript --local --schema public > src/generated/supabase-types.ts",
         "cwd": "libs/cah-db"
       }
     },
-    "db-remote-commit": {
+    "db:dump": {
+      "description": "Dump contents from a remote database.",
       "executor": "nx:run-commands",
       "options": {
-        "command": "supabase db remote commit",
+        "command": "npx supabase db dump -f supabase/schema.sql --data-only",
         "cwd": "libs/cah-db"
       }
     },
-    "db-dump": {
+    "db:push": {
+      "description": "Push all local migrations to a remote database.",
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node src/db-dump.ts",
+        "command": "npx supabase db push",
         "cwd": "libs/cah-db"
       }
     },
-    "db-restore": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "supabase db restore --db-url $DATABASE_URL -f backup.sql",
-        "cwd": "libs/cah-db"
-      }
-    },
-    "create-migration-from-diff": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx supabase db diff --use-migra -f initial_schema",
-        "cwd": "libs/cah-db"
-      }
-    },
-    "create-empty-migration": {
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx supabase migration new create_employees_table",
-        "cwd": "libs/cah-db"
-      }
-    },
-    "db-reset": {
+    "db:reset": {
+      "description": "Reset the local database to a clean state by recreating the local Postgres container and applying all local migrations found in supabase/migrations directory.",
       "executor": "nx:run-commands",
       "options": {
         "command": "npx supabase db reset",
         "cwd": "libs/cah-db"
       }
     },
-    "create-local-snapshot": {
+    "db:diff": {
+      "description": "Generate a new migration file based on the differences between the local and remote database schemas using the migra tool.",
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node libs/cah-db/src/create-snapshot-of-local.mjs"],
-        "parallel": false
+        "command": "npx supabase db diff --use-migra -f migration",
+        "cwd": "libs/cah-db"
+      },
+      "configurations": {
+        "local": {
+          "command": "npx supabase db diff --use-migra -f migration --local",
+          "cwd": "libs/cah-db"
+        }
       }
     },
-    "create-prod-snapshot": {
+    "db:remote-commit": {
+      "description": "Pull schema changes from a remote database and insert a new row into the migration history table.",
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node libs/cah-db/src/create-snapshot-of-prod.mjs"],
-        "parallel": false
+        "command": "npx supabase db remote commit",
+        "cwd": "libs/cah-db"
       }
     },
-    "restore-snapshot-to-local-db": {
+    "migration:new": {
+      "description": "Generate a new empty migration file.",
       "executor": "nx:run-commands",
       "options": {
-        "commands": ["node libs/cah-db/src/restore-snapshot.mjs"],
-        "parallel": false
+        "command": "npx supabase migration new",
+        "cwd": "libs/cah-db"
       }
     },
-    "clear-local-db-data": {
+    "migration:list": {
+      "description": "List all local and remote migrations.",
       "executor": "nx:run-commands",
       "options": {
-        "commands": [
-          "PGPASSWORD=postgres psql -U postgres -h 127.0.0.1 -p 54322 -f libs/cah-db/supabase/clear-db.sql"
-        ],
-        "parallel": false
+        "command": "npx supabase migration list",
+        "cwd": "libs/cah-db"
+      }
+    },
+    "migration:up": {
+      "description": "Apply all pending migrations to the local database.",
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx supabase migration up",
+        "cwd": "libs/cah-db"
       }
     }
   },

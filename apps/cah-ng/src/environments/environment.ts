@@ -3,7 +3,7 @@ import { CahEnvironment } from './environment.model';
 export const environment: CahEnvironment = {
   environmentName: 'local',
   production: false,
-  supabaseUrl: 'https://ogdbrteutpsqzhnzqktj.supabase.co',
+  supabaseUrl: 'http://localhost:54321',
   supabasePublicAnonKey:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nZGJydGV1dHBzcXpobnpxa3RqIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODUxMzQzMzQsImV4cCI6MjAwMDcxMDMzNH0.jFOG5bw2ZPvhE_JCbh8-g6qcK-sODLTyw7zBGCTtK8M',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0',
 };

@@ -1,6 +1,9 @@
 {
     "editor.formatOnSave": true,
     "cSpell.words": [
-        "supabase"
+        "Buildable",
+        "migra",
+        "supabase",
+        "xstate"
     ]
 }
