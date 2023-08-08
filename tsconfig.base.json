@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "cah-db": ["libs/cah-db/src/index.ts"]
+      "cah-db": ["libs/cah-db/src/index.ts"],
+      "supabase-nx": ["libs/supabase-nx/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

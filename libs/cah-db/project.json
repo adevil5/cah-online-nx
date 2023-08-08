@@ -37,20 +37,10 @@
       }
     },
     "start": {
-      "description": "Start the Supabase local development stack.",
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx supabase start",
-        "cwd": "libs/cah-db"
-      }
+      "executor": "supabase-nx:start"
     },
     "stop": {
-      "description": "Stop the Supabase local development stack.",
-      "executor": "nx:run-commands",
-      "options": {
-        "command": "npx supabase stop",
-        "cwd": "libs/cah-db"
-      }
+      "executor": "supabase-nx:stop"
     },
     "gen:types:local": {
       "description": "Stop the Supabase local development stack.",

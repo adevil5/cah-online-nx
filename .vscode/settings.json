@@ -1,10 +1,14 @@
 {
-    "editor.formatOnSave": true,
-    "cSpell.words": [
-        "Buildable",
-        "devkit",
-        "migra",
-        "supabase",
-        "xstate"
-    ]
+  "editor.formatOnSave": true,
+  "cSpell.words": [
+    "Buildable",
+    "devkit",
+    "migra",
+    "supabase",
+    "workdir",
+    "xstate"
+  ],
+  "eslint.validate": [
+    "json"
+  ]
 }
