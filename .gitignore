@@ -38,8 +38,4 @@ testem.log
 .DS_Store
 Thumbs.db
 
-.angular
-
-# env files
-.env*
-!.env.template
+.nx/cache
