@@ -1,0 +1,24 @@
+{
+  "name": "supabase",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "supabase/src",
+  "projectType": "library",
+  "targets": {
+    "status": {
+      "command": "supabase status"
+    },
+    "start": {
+      "command": "supabase start"
+    },
+    "stop": {
+      "command": "supabase stop"
+    },
+    "gen-types": {
+      "command": "supabase gen types typescript --local > supabase/generated/schema.gen.ts"
+    },
+    "convert-card-json-to-sql": {
+      "command": "node supabase/cards/convert-card-json-to-sql.js"
+    }
+  },
+  "tags": []
+}
