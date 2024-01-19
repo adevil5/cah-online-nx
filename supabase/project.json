@@ -13,6 +13,9 @@
     "stop": {
       "command": "supabase stop"
     },
+    "db:reset": {
+      "command": "supabase db reset"
+    },
     "gen-types": {
       "command": "supabase gen types typescript --local > supabase/generated/schema.gen.ts"
     },

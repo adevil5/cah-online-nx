@@ -1,512 +1,236 @@
-create table "public"."cards" (
-    "card_id" uuid not null default gen_random_uuid(),
-    "deck_id" uuid not null,
-    "text" text not null,
-    "type" character varying(50) not null,
+CREATE TYPE card_type_enum AS ENUM ('black', 'white');
+
+CREATE TABLE IF NOT EXISTS "public"."cards" (
+    "card_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "deck_id" "uuid" NOT NULL,
+    "text" "text" NOT NULL,
+    "type" card_type_enum NOT NULL,
     "pick" integer,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE "public"."cards" OWNER TO "postgres";
 
-create table "public"."decks" (
-    "deck_id" uuid not null default gen_random_uuid(),
-    "name" character varying(255) not null,
-    "official" boolean default false
+CREATE TABLE IF NOT EXISTS "public"."decks" (
+    "deck_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "name" character varying(255) NOT NULL,
+    "official" boolean DEFAULT false
 );
 
+ALTER TABLE "public"."decks" OWNER TO "postgres";
 
-create table "public"."game_configurations" (
-    "config_id" uuid not null default gen_random_uuid(),
-    "game_id" uuid not null,
-    "czar_rotation" character varying(255) not null,
-    "max_players" integer not null,
-    "score_limit" integer not null,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+CREATE TYPE game_state_enum AS ENUM ('lobby', 'in_progress', 'completed');
+
+CREATE TABLE IF NOT EXISTS "public"."game_sessions" (
+    "game_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "host_user_id" "uuid" NOT NULL,
+    "game_code" character varying(255) NOT NULL,
+    "game_state" game_state_enum DEFAULT 'lobby' NOT NULL,
+    "rando_cardrissian" boolean DEFAULT false NOT NULL,
+    "score_limit" integer DEFAULT 0 NOT NULL,
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE "public"."game_sessions" OWNER TO "postgres";
 
-create table "public"."game_sessions" (
-    "game_id" uuid not null default gen_random_uuid(),
-    "host_user_id" uuid not null,
-    "game_code" character varying(255) not null,
-    "is_active" boolean default true,
-    "rando_cardrissian" boolean default false,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS "public"."game_cards" (
+    "game_card_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "game_id" "uuid" NOT NULL,
+    "card_id" "uuid" NOT NULL,
+    "user_id" "uuid" DEFAULT NULL,
+    "is_played" boolean DEFAULT false,
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE "public"."game_cards" OWNER TO "postgres";
 
-create table "public"."player_cards" (
-    "player_card_id" uuid not null default gen_random_uuid(),
-    "game_id" uuid not null,
-    "player_id" uuid not null,
-    "card_id" uuid not null,
-    "is_played" boolean default false,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS "public"."player_sessions" (
+    "user_id" "uuid" NOT NULL,
+    "game_id" "uuid" NOT NULL
 );
 
+ALTER TABLE "public"."player_sessions" OWNER TO "postgres";
 
-create table "public"."players" (
-    "player_id" uuid not null default gen_random_uuid(),
-    "game_id" uuid not null,
-    "user_id" uuid,
-    "is_czar" boolean default false,
-    "score" integer default 0,
-    "is_active" boolean default true,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS "public"."players" (
+    "user_id" "uuid" NOT NULL,
+    "username" character varying(255) NOT NULL,
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE "public"."players" OWNER TO "postgres";
 
-create table "public"."responses" (
-    "response_id" uuid not null default gen_random_uuid(),
-    "round_id" uuid not null,
-    "player_id" uuid not null,
-    "card_id" uuid not null,
-    "response_order" integer not null,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS "public"."response_cards" (
+    "response_id" "uuid" NOT NULL,
+    "response_order" integer NOT NULL,
+    "card_id" "uuid" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE "public"."response_cards" OWNER TO "postgres";
 
-create table "public"."rounds" (
-    "round_id" uuid not null default gen_random_uuid(),
-    "game_id" uuid not null,
-    "current_black_card_id" uuid not null,
-    "czar_user_id" uuid not null,
-    "round_number" integer not null,
-    "is_active" boolean default true,
-    "created_at" timestamp with time zone default CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS "public"."responses" (
+    "response_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "round_id" "uuid" NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
+ALTER TABLE "public"."responses" OWNER TO "postgres";
 
-CREATE UNIQUE INDEX cards_pkey ON public.cards USING btree (card_id);
+CREATE TYPE round_phase_enum AS ENUM ('waiting_for_responses', 'judging', 'completed');
 
-CREATE UNIQUE INDEX decks_pkey ON public.decks USING btree (deck_id);
+CREATE TABLE IF NOT EXISTS "public"."rounds" (
+    "round_id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "game_id" "uuid" NOT NULL,
+    "current_black_card_id" "uuid" NOT NULL,
+    "czar_user_id" "uuid" NOT NULL,
+    "round_number" integer NOT NULL,
+    "winning_response_id" "uuid" DEFAULT NULL,
+    "round_phase" round_phase_enum DEFAULT 'waiting_for_responses' NOT NULL,
+    "created_at" timestamp with time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
 
-CREATE UNIQUE INDEX game_configurations_pkey ON public.game_configurations USING btree (config_id);
+ALTER TABLE "public"."rounds" OWNER TO "postgres";
 
-CREATE UNIQUE INDEX game_sessions_game_code_key ON public.game_sessions USING btree (game_code);
+ALTER TABLE ONLY "public"."cards"
+    ADD CONSTRAINT "cards_pkey" PRIMARY KEY ("card_id");
 
-CREATE UNIQUE INDEX game_sessions_pkey ON public.game_sessions USING btree (game_id);
+ALTER TABLE ONLY "public"."decks"
+    ADD CONSTRAINT "decks_pkey" PRIMARY KEY ("deck_id");
 
-CREATE UNIQUE INDEX player_cards_pkey ON public.player_cards USING btree (player_card_id);
+ALTER TABLE ONLY "public"."game_sessions"
+    ADD CONSTRAINT "game_sessions_pkey" PRIMARY KEY ("game_id");
 
-CREATE UNIQUE INDEX players_pkey ON public.players USING btree (player_id);
+ALTER TABLE ONLY "public"."game_cards"
+    ADD CONSTRAINT "game_cards_pkey" PRIMARY KEY ("game_card_id");
 
-CREATE UNIQUE INDEX responses_pkey ON public.responses USING btree (response_id);
+ALTER TABLE ONLY "public"."player_sessions"
+    ADD CONSTRAINT "player_sessions_pkey" PRIMARY KEY ("user_id", "game_id");
 
-CREATE UNIQUE INDEX rounds_pkey ON public.rounds USING btree (round_id);
+ALTER TABLE ONLY "public"."players"
+    ADD CONSTRAINT "players_pkey" PRIMARY KEY ("user_id");
 
-alter table "public"."cards" add constraint "cards_pkey" PRIMARY KEY using index "cards_pkey";
+ALTER TABLE ONLY "public"."responses"
+    ADD CONSTRAINT "responses_pkey" PRIMARY KEY ("response_id");
 
-alter table "public"."decks" add constraint "decks_pkey" PRIMARY KEY using index "decks_pkey";
+ALTER TABLE ONLY "public"."rounds"
+    ADD CONSTRAINT "rounds_pkey" PRIMARY KEY ("round_id");
 
-alter table "public"."game_configurations" add constraint "game_configurations_pkey" PRIMARY KEY using index "game_configurations_pkey";
+ALTER TABLE ONLY "public"."cards"
+    ADD CONSTRAINT "cards_deck_id_fkey" FOREIGN KEY ("deck_id") REFERENCES "public"."decks"("deck_id");
 
-alter table "public"."game_sessions" add constraint "game_sessions_pkey" PRIMARY KEY using index "game_sessions_pkey";
+ALTER TABLE ONLY "public"."game_sessions"
+    ADD CONSTRAINT "game_sessions_host_user_id_fkey" FOREIGN KEY ("host_user_id") REFERENCES "auth"."users"("id");
 
-alter table "public"."player_cards" add constraint "player_cards_pkey" PRIMARY KEY using index "player_cards_pkey";
+ALTER TABLE ONLY "public"."game_cards"
+    ADD CONSTRAINT "game_cards_card_id_fkey" FOREIGN KEY ("card_id") REFERENCES "public"."cards"("card_id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-alter table "public"."players" add constraint "players_pkey" PRIMARY KEY using index "players_pkey";
+ALTER TABLE ONLY "public"."game_cards"
+    ADD CONSTRAINT "game_cards_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."game_sessions"("game_id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-alter table "public"."responses" add constraint "responses_pkey" PRIMARY KEY using index "responses_pkey";
+ALTER TABLE ONLY "public"."game_cards"
+    ADD CONSTRAINT "game_cards_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-alter table "public"."rounds" add constraint "rounds_pkey" PRIMARY KEY using index "rounds_pkey";
+ALTER TABLE ONLY "public"."player_sessions"
+    ADD CONSTRAINT "player_sessions_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."game_sessions"("game_id");
 
-alter table "public"."cards" add constraint "cards_deck_id_fkey" FOREIGN KEY (deck_id) REFERENCES decks(deck_id) not valid;
+ALTER TABLE ONLY "public"."player_sessions"
+    ADD CONSTRAINT "player_sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id");
 
-alter table "public"."cards" validate constraint "cards_deck_id_fkey";
+ALTER TABLE ONLY "public"."players"
+    ADD CONSTRAINT "players_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-alter table "public"."cards" add constraint "cards_type_check" CHECK (((type)::text = ANY ((ARRAY['black'::character varying, 'white'::character varying])::text[]))) not valid;
+ALTER TABLE ONLY "public"."response_cards"
+    ADD CONSTRAINT "response_cards_card_id_fkey" FOREIGN KEY ("card_id") REFERENCES "public"."cards"("card_id");
 
-alter table "public"."cards" validate constraint "cards_type_check";
+ALTER TABLE ONLY "public"."response_cards"
+    ADD CONSTRAINT "response_cards_response_id_fkey" FOREIGN KEY ("response_id") REFERENCES "public"."responses"("response_id") ON DELETE CASCADE;
 
-alter table "public"."game_configurations" add constraint "game_configurations_game_id_fkey" FOREIGN KEY (game_id) REFERENCES game_sessions(game_id) not valid;
+ALTER TABLE ONLY "public"."responses"
+    ADD CONSTRAINT "responses_round_id_fkey" FOREIGN KEY ("round_id") REFERENCES "public"."rounds"("round_id") ON DELETE CASCADE;
 
-alter table "public"."game_configurations" validate constraint "game_configurations_game_id_fkey";
+ALTER TABLE ONLY "public"."responses"
+    ADD CONSTRAINT "responses_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id");
 
-alter table "public"."game_sessions" add constraint "game_sessions_game_code_key" UNIQUE using index "game_sessions_game_code_key";
+ALTER TABLE ONLY "public"."rounds"
+    ADD CONSTRAINT "rounds_current_black_card_id_fkey" FOREIGN KEY ("current_black_card_id") REFERENCES "public"."cards"("card_id");
 
-alter table "public"."game_sessions" add constraint "game_sessions_host_user_id_fkey" FOREIGN KEY (host_user_id) REFERENCES auth.users(id) not valid;
+ALTER TABLE ONLY "public"."rounds"
+    ADD CONSTRAINT "rounds_czar_user_id_fkey" FOREIGN KEY ("czar_user_id") REFERENCES "auth"."users"("id");
 
-alter table "public"."game_sessions" validate constraint "game_sessions_host_user_id_fkey";
+ALTER TABLE ONLY "public"."rounds"
+    ADD CONSTRAINT "rounds_winning_response_id_fkey" FOREIGN KEY ("winning_response_id") REFERENCES "public"."responses"("response_id");
 
-alter table "public"."player_cards" add constraint "player_cards_card_id_fkey" FOREIGN KEY (card_id) REFERENCES cards(card_id) not valid;
+ALTER TABLE ONLY "public"."rounds"
+    ADD CONSTRAINT "rounds_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."game_sessions"("game_id") ON UPDATE CASCADE ON DELETE CASCADE;
 
-alter table "public"."player_cards" validate constraint "player_cards_card_id_fkey";
+CREATE INDEX idx_cards_deck_id ON public.cards (deck_id);
 
-alter table "public"."player_cards" add constraint "player_cards_game_id_fkey" FOREIGN KEY (game_id) REFERENCES game_sessions(game_id) not valid;
+CREATE INDEX idx_game_cards_game ON public.game_cards (game_id);
 
-alter table "public"."player_cards" validate constraint "player_cards_game_id_fkey";
+CREATE INDEX idx_game_cards_game_user ON public.game_cards (game_id, user_id);
 
-alter table "public"."player_cards" add constraint "player_cards_player_id_fkey" FOREIGN KEY (player_id) REFERENCES players(player_id) not valid;
+CREATE INDEX idx_game_cards_game_user_played ON public.game_cards (game_id, user_id, is_played);
 
-alter table "public"."player_cards" validate constraint "player_cards_player_id_fkey";
+CREATE INDEX idx_rounds_game_id ON public.rounds (game_id);
 
-alter table "public"."players" add constraint "players_game_id_fkey" FOREIGN KEY (game_id) REFERENCES game_sessions(game_id) not valid;
+CREATE INDEX idx_responses_round_id ON public.responses (round_id);
 
-alter table "public"."players" validate constraint "players_game_id_fkey";
 
-alter table "public"."players" add constraint "players_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) not valid;
+GRANT USAGE ON SCHEMA "public" TO "postgres";
+GRANT USAGE ON SCHEMA "public" TO "anon";
+GRANT USAGE ON SCHEMA "public" TO "authenticated";
+GRANT USAGE ON SCHEMA "public" TO "service_role";
 
-alter table "public"."players" validate constraint "players_user_id_fkey";
+GRANT ALL ON TABLE "public"."cards" TO "anon";
+GRANT ALL ON TABLE "public"."cards" TO "authenticated";
+GRANT ALL ON TABLE "public"."cards" TO "service_role";
 
-alter table "public"."responses" add constraint "responses_card_id_fkey" FOREIGN KEY (card_id) REFERENCES cards(card_id) not valid;
+GRANT ALL ON TABLE "public"."decks" TO "anon";
+GRANT ALL ON TABLE "public"."decks" TO "authenticated";
+GRANT ALL ON TABLE "public"."decks" TO "service_role";
 
-alter table "public"."responses" validate constraint "responses_card_id_fkey";
+GRANT ALL ON TABLE "public"."game_sessions" TO "anon";
+GRANT ALL ON TABLE "public"."game_sessions" TO "authenticated";
+GRANT ALL ON TABLE "public"."game_sessions" TO "service_role";
 
-alter table "public"."responses" add constraint "responses_player_id_fkey" FOREIGN KEY (player_id) REFERENCES players(player_id) not valid;
+GRANT ALL ON TABLE "public"."game_cards" TO "anon";
+GRANT ALL ON TABLE "public"."game_cards" TO "authenticated";
+GRANT ALL ON TABLE "public"."game_cards" TO "service_role";
 
-alter table "public"."responses" validate constraint "responses_player_id_fkey";
+GRANT ALL ON TABLE "public"."player_sessions" TO "anon";
+GRANT ALL ON TABLE "public"."player_sessions" TO "authenticated";
+GRANT ALL ON TABLE "public"."player_sessions" TO "service_role";
 
-alter table "public"."responses" add constraint "responses_round_id_fkey" FOREIGN KEY (round_id) REFERENCES rounds(round_id) not valid;
+GRANT ALL ON TABLE "public"."players" TO "anon";
+GRANT ALL ON TABLE "public"."players" TO "authenticated";
+GRANT ALL ON TABLE "public"."players" TO "service_role";
 
-alter table "public"."responses" validate constraint "responses_round_id_fkey";
+GRANT ALL ON TABLE "public"."response_cards" TO "anon";
+GRANT ALL ON TABLE "public"."response_cards" TO "authenticated";
+GRANT ALL ON TABLE "public"."response_cards" TO "service_role";
 
-alter table "public"."rounds" add constraint "rounds_current_black_card_id_fkey" FOREIGN KEY (current_black_card_id) REFERENCES cards(card_id) not valid;
+GRANT ALL ON TABLE "public"."responses" TO "anon";
+GRANT ALL ON TABLE "public"."responses" TO "authenticated";
+GRANT ALL ON TABLE "public"."responses" TO "service_role";
 
-alter table "public"."rounds" validate constraint "rounds_current_black_card_id_fkey";
+GRANT ALL ON TABLE "public"."rounds" TO "anon";
+GRANT ALL ON TABLE "public"."rounds" TO "authenticated";
+GRANT ALL ON TABLE "public"."rounds" TO "service_role";
 
-alter table "public"."rounds" add constraint "rounds_czar_user_id_fkey" FOREIGN KEY (czar_user_id) REFERENCES players(player_id) not valid;
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON SEQUENCES  TO "service_role";
 
-alter table "public"."rounds" validate constraint "rounds_czar_user_id_fkey";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON FUNCTIONS  TO "service_role";
 
-alter table "public"."rounds" add constraint "rounds_game_id_fkey" FOREIGN KEY (game_id) REFERENCES game_sessions(game_id) not valid;
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "postgres";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "anon";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "authenticated";
+ALTER DEFAULT PRIVILEGES FOR ROLE "postgres" IN SCHEMA "public" GRANT ALL ON TABLES  TO "service_role";
 
-alter table "public"."rounds" validate constraint "rounds_game_id_fkey";
-
-grant delete on table "public"."cards" to "anon";
-
-grant insert on table "public"."cards" to "anon";
-
-grant references on table "public"."cards" to "anon";
-
-grant select on table "public"."cards" to "anon";
-
-grant trigger on table "public"."cards" to "anon";
-
-grant truncate on table "public"."cards" to "anon";
-
-grant update on table "public"."cards" to "anon";
-
-grant delete on table "public"."cards" to "authenticated";
-
-grant insert on table "public"."cards" to "authenticated";
-
-grant references on table "public"."cards" to "authenticated";
-
-grant select on table "public"."cards" to "authenticated";
-
-grant trigger on table "public"."cards" to "authenticated";
-
-grant truncate on table "public"."cards" to "authenticated";
-
-grant update on table "public"."cards" to "authenticated";
-
-grant delete on table "public"."cards" to "service_role";
-
-grant insert on table "public"."cards" to "service_role";
-
-grant references on table "public"."cards" to "service_role";
-
-grant select on table "public"."cards" to "service_role";
-
-grant trigger on table "public"."cards" to "service_role";
-
-grant truncate on table "public"."cards" to "service_role";
-
-grant update on table "public"."cards" to "service_role";
-
-grant delete on table "public"."decks" to "anon";
-
-grant insert on table "public"."decks" to "anon";
-
-grant references on table "public"."decks" to "anon";
-
-grant select on table "public"."decks" to "anon";
-
-grant trigger on table "public"."decks" to "anon";
-
-grant truncate on table "public"."decks" to "anon";
-
-grant update on table "public"."decks" to "anon";
-
-grant delete on table "public"."decks" to "authenticated";
-
-grant insert on table "public"."decks" to "authenticated";
-
-grant references on table "public"."decks" to "authenticated";
-
-grant select on table "public"."decks" to "authenticated";
-
-grant trigger on table "public"."decks" to "authenticated";
-
-grant truncate on table "public"."decks" to "authenticated";
-
-grant update on table "public"."decks" to "authenticated";
-
-grant delete on table "public"."decks" to "service_role";
-
-grant insert on table "public"."decks" to "service_role";
-
-grant references on table "public"."decks" to "service_role";
-
-grant select on table "public"."decks" to "service_role";
-
-grant trigger on table "public"."decks" to "service_role";
-
-grant truncate on table "public"."decks" to "service_role";
-
-grant update on table "public"."decks" to "service_role";
-
-grant delete on table "public"."game_configurations" to "anon";
-
-grant insert on table "public"."game_configurations" to "anon";
-
-grant references on table "public"."game_configurations" to "anon";
-
-grant select on table "public"."game_configurations" to "anon";
-
-grant trigger on table "public"."game_configurations" to "anon";
-
-grant truncate on table "public"."game_configurations" to "anon";
-
-grant update on table "public"."game_configurations" to "anon";
-
-grant delete on table "public"."game_configurations" to "authenticated";
-
-grant insert on table "public"."game_configurations" to "authenticated";
-
-grant references on table "public"."game_configurations" to "authenticated";
-
-grant select on table "public"."game_configurations" to "authenticated";
-
-grant trigger on table "public"."game_configurations" to "authenticated";
-
-grant truncate on table "public"."game_configurations" to "authenticated";
-
-grant update on table "public"."game_configurations" to "authenticated";
-
-grant delete on table "public"."game_configurations" to "service_role";
-
-grant insert on table "public"."game_configurations" to "service_role";
-
-grant references on table "public"."game_configurations" to "service_role";
-
-grant select on table "public"."game_configurations" to "service_role";
-
-grant trigger on table "public"."game_configurations" to "service_role";
-
-grant truncate on table "public"."game_configurations" to "service_role";
-
-grant update on table "public"."game_configurations" to "service_role";
-
-grant delete on table "public"."game_sessions" to "anon";
-
-grant insert on table "public"."game_sessions" to "anon";
-
-grant references on table "public"."game_sessions" to "anon";
-
-grant select on table "public"."game_sessions" to "anon";
-
-grant trigger on table "public"."game_sessions" to "anon";
-
-grant truncate on table "public"."game_sessions" to "anon";
-
-grant update on table "public"."game_sessions" to "anon";
-
-grant delete on table "public"."game_sessions" to "authenticated";
-
-grant insert on table "public"."game_sessions" to "authenticated";
-
-grant references on table "public"."game_sessions" to "authenticated";
-
-grant select on table "public"."game_sessions" to "authenticated";
-
-grant trigger on table "public"."game_sessions" to "authenticated";
-
-grant truncate on table "public"."game_sessions" to "authenticated";
-
-grant update on table "public"."game_sessions" to "authenticated";
-
-grant delete on table "public"."game_sessions" to "service_role";
-
-grant insert on table "public"."game_sessions" to "service_role";
-
-grant references on table "public"."game_sessions" to "service_role";
-
-grant select on table "public"."game_sessions" to "service_role";
-
-grant trigger on table "public"."game_sessions" to "service_role";
-
-grant truncate on table "public"."game_sessions" to "service_role";
-
-grant update on table "public"."game_sessions" to "service_role";
-
-grant delete on table "public"."player_cards" to "anon";
-
-grant insert on table "public"."player_cards" to "anon";
-
-grant references on table "public"."player_cards" to "anon";
-
-grant select on table "public"."player_cards" to "anon";
-
-grant trigger on table "public"."player_cards" to "anon";
-
-grant truncate on table "public"."player_cards" to "anon";
-
-grant update on table "public"."player_cards" to "anon";
-
-grant delete on table "public"."player_cards" to "authenticated";
-
-grant insert on table "public"."player_cards" to "authenticated";
-
-grant references on table "public"."player_cards" to "authenticated";
-
-grant select on table "public"."player_cards" to "authenticated";
-
-grant trigger on table "public"."player_cards" to "authenticated";
-
-grant truncate on table "public"."player_cards" to "authenticated";
-
-grant update on table "public"."player_cards" to "authenticated";
-
-grant delete on table "public"."player_cards" to "service_role";
-
-grant insert on table "public"."player_cards" to "service_role";
-
-grant references on table "public"."player_cards" to "service_role";
-
-grant select on table "public"."player_cards" to "service_role";
-
-grant trigger on table "public"."player_cards" to "service_role";
-
-grant truncate on table "public"."player_cards" to "service_role";
-
-grant update on table "public"."player_cards" to "service_role";
-
-grant delete on table "public"."players" to "anon";
-
-grant insert on table "public"."players" to "anon";
-
-grant references on table "public"."players" to "anon";
-
-grant select on table "public"."players" to "anon";
-
-grant trigger on table "public"."players" to "anon";
-
-grant truncate on table "public"."players" to "anon";
-
-grant update on table "public"."players" to "anon";
-
-grant delete on table "public"."players" to "authenticated";
-
-grant insert on table "public"."players" to "authenticated";
-
-grant references on table "public"."players" to "authenticated";
-
-grant select on table "public"."players" to "authenticated";
-
-grant trigger on table "public"."players" to "authenticated";
-
-grant truncate on table "public"."players" to "authenticated";
-
-grant update on table "public"."players" to "authenticated";
-
-grant delete on table "public"."players" to "service_role";
-
-grant insert on table "public"."players" to "service_role";
-
-grant references on table "public"."players" to "service_role";
-
-grant select on table "public"."players" to "service_role";
-
-grant trigger on table "public"."players" to "service_role";
-
-grant truncate on table "public"."players" to "service_role";
-
-grant update on table "public"."players" to "service_role";
-
-grant delete on table "public"."responses" to "anon";
-
-grant insert on table "public"."responses" to "anon";
-
-grant references on table "public"."responses" to "anon";
-
-grant select on table "public"."responses" to "anon";
-
-grant trigger on table "public"."responses" to "anon";
-
-grant truncate on table "public"."responses" to "anon";
-
-grant update on table "public"."responses" to "anon";
-
-grant delete on table "public"."responses" to "authenticated";
-
-grant insert on table "public"."responses" to "authenticated";
-
-grant references on table "public"."responses" to "authenticated";
-
-grant select on table "public"."responses" to "authenticated";
-
-grant trigger on table "public"."responses" to "authenticated";
-
-grant truncate on table "public"."responses" to "authenticated";
-
-grant update on table "public"."responses" to "authenticated";
-
-grant delete on table "public"."responses" to "service_role";
-
-grant insert on table "public"."responses" to "service_role";
-
-grant references on table "public"."responses" to "service_role";
-
-grant select on table "public"."responses" to "service_role";
-
-grant trigger on table "public"."responses" to "service_role";
-
-grant truncate on table "public"."responses" to "service_role";
-
-grant update on table "public"."responses" to "service_role";
-
-grant delete on table "public"."rounds" to "anon";
-
-grant insert on table "public"."rounds" to "anon";
-
-grant references on table "public"."rounds" to "anon";
-
-grant select on table "public"."rounds" to "anon";
-
-grant trigger on table "public"."rounds" to "anon";
-
-grant truncate on table "public"."rounds" to "anon";
-
-grant update on table "public"."rounds" to "anon";
-
-grant delete on table "public"."rounds" to "authenticated";
-
-grant insert on table "public"."rounds" to "authenticated";
-
-grant references on table "public"."rounds" to "authenticated";
-
-grant select on table "public"."rounds" to "authenticated";
-
-grant trigger on table "public"."rounds" to "authenticated";
-
-grant truncate on table "public"."rounds" to "authenticated";
-
-grant update on table "public"."rounds" to "authenticated";
-
-grant delete on table "public"."rounds" to "service_role";
-
-grant insert on table "public"."rounds" to "service_role";
-
-grant references on table "public"."rounds" to "service_role";
-
-grant select on table "public"."rounds" to "service_role";
-
-grant trigger on table "public"."rounds" to "service_role";
-
-grant truncate on table "public"."rounds" to "service_role";
-
-grant update on table "public"."rounds" to "service_role";
-
-
+RESET ALL;
