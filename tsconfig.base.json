@@ -15,7 +15,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@cah-online-nx/supabase": ["supabase/generated/schema.gen.ts"]
+      "@cah-online-nx/supabase": ["supabase/generated/schema.gen.ts"],
+      "@cah-online-nx/util-type-helpers": [
+        "libs/util-type-helpers/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]
