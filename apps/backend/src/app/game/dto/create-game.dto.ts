@@ -1,7 +1,10 @@
+// import { TablesInsert } from '@cah-online-nx/supabase';
+// import { CamelCase } from '@cah-online-nx/util-type-helpers';
+
+// type CreateGameDto = CamelCase<TablesInsert<'game_sessions'>>;
+
 export class CreateGameDto {
-  hostUserId: string;
-  maxPlayers: number;
-  scoreLimit: number;
-  deckSelection: string[]; // Array of deck IDs
-  randoCardrissian: boolean;
+  randoCardrissian?: boolean;
+  scoreLimit?: number;
+  deckIds: string[];
 }
