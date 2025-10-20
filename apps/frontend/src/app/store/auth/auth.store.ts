@@ -1,9 +1,9 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap, catchError, of } from 'rxjs';
+import { pipe, switchMap, tap, catchError, of, from } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
-import { HttpClient } from '@angular/common/http';
+import { SupabaseService } from '../../services/supabase.service';
 import type { AuthState, AuthUser, AuthSession, LoginDto, RegistrationDto } from '../models';
 
 // Initial state
@@ -44,20 +44,29 @@ export const AuthStore = signalStore(
     currentUserId: computed(() => store.user()?.userId ?? null),
     currentUserEmail: computed(() => store.user()?.email ?? null),
   })),
-  withMethods((store, http = inject(HttpClient)) => ({
+  withMethods((store, supabaseService = inject(SupabaseService)) => ({
     /**
      * Register a new user
      */
-    register: rxMethod<RegistrationDto>(
+    register: rxMethod<RegistrationDto & { username: string }>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((dto) =>
-          http.post<{ user: AuthUser; session: AuthSession }>('/api/auth/register', dto).pipe(
+          from(supabaseService.signUp(dto.email, dto.password, dto.username)).pipe(
             tapResponse({
               next: (response) => {
+                const user: AuthUser = {
+                  userId: response.user?.id ?? '',
+                  email: response.user?.email ?? '',
+                };
+                const session: AuthSession = {
+                  accessToken: response.session?.access_token ?? '',
+                  refreshToken: response.session?.refresh_token ?? '',
+                  expiresAt: response.session?.expires_at ?? 0,
+                };
                 patchState(store, {
-                  user: response.user,
-                  session: response.session,
+                  user,
+                  session,
                   isAuthenticated: true,
                   loading: false,
                   error: null,
@@ -82,12 +91,21 @@ export const AuthStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((dto) =>
-          http.post<{ user: AuthUser; session: AuthSession }>('/api/auth/login', dto).pipe(
+          from(supabaseService.signIn(dto.email, dto.password)).pipe(
             tapResponse({
               next: (response) => {
+                const user: AuthUser = {
+                  userId: response.user?.id ?? '',
+                  email: response.user?.email ?? '',
+                };
+                const session: AuthSession = {
+                  accessToken: response.session?.access_token ?? '',
+                  refreshToken: response.session?.refresh_token ?? '',
+                  expiresAt: response.session?.expires_at ?? 0,
+                };
                 patchState(store, {
-                  user: response.user,
-                  session: response.session,
+                  user,
+                  session,
                   isAuthenticated: true,
                   loading: false,
                   error: null,
@@ -112,7 +130,7 @@ export const AuthStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(() =>
-          http.post('/api/auth/logout', {}).pipe(
+          from(supabaseService.signOut()).pipe(
             tapResponse({
               next: () => {
                 patchState(store, {
