@@ -1,9 +1,9 @@
 import { computed, inject } from '@angular/core';
 import { signalStore, withState, withComputed, withMethods, patchState } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { pipe, switchMap, tap } from 'rxjs';
+import { pipe, switchMap, tap, from } from 'rxjs';
 import { tapResponse } from '@ngrx/operators';
-import { HttpClient } from '@angular/common/http';
+import { SupabaseService } from '../../services/supabase.service';
 import type { GameWithPlayers, GameSession, CreateGameDto, JoinGameDto, StartGameDto } from '../models';
 
 // Initial state
@@ -68,7 +68,7 @@ export const GameStore = signalStore(
     randoCardrissian: computed(() => store.currentGame()?.randoCardrissian ?? false),
     scoreLimit: computed(() => store.currentGame()?.scoreLimit ?? 7),
   })),
-  withMethods((store, http = inject(HttpClient)) => ({
+  withMethods((store, supabaseService = inject(SupabaseService)) => ({
     /**
      * Create a new game
      */
@@ -76,9 +76,18 @@ export const GameStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((dto) =>
-          http.post<GameWithPlayers>('/api/game/create', dto).pipe(
+          from(supabaseService.createGame(dto.randoCardrissian, dto.scoreLimit)).pipe(
             tapResponse({
-              next: (game) => {
+              next: async (gameSession) => {
+                // Fetch players for the game
+                const players = await supabaseService.getPlayersInGame(gameSession.gameId);
+                const game: GameWithPlayers = {
+                  ...gameSession,
+                  players: players.map((p: any) => ({
+                    userId: p.user_id,
+                    username: p.players.username,
+                  })),
+                };
                 patchState(store, {
                   currentGame: game,
                   loading: false,
@@ -104,9 +113,18 @@ export const GameStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((dto) =>
-          http.post<GameWithPlayers>('/api/game/join', dto).pipe(
+          from(supabaseService.joinGame(dto.gameCode)).pipe(
             tapResponse({
-              next: (game) => {
+              next: async (gameSession) => {
+                // Fetch players for the game
+                const players = await supabaseService.getPlayersInGame(gameSession.gameId);
+                const game: GameWithPlayers = {
+                  ...gameSession,
+                  players: players.map((p: any) => ({
+                    userId: p.user_id,
+                    username: p.players.username,
+                  })),
+                };
                 patchState(store, {
                   currentGame: game,
                   loading: false,
@@ -132,9 +150,18 @@ export const GameStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((dto) =>
-          http.post<GameWithPlayers>('/api/game/start', dto).pipe(
+          from(supabaseService.startGame(dto.gameId)).pipe(
             tapResponse({
-              next: (game) => {
+              next: async (gameSession) => {
+                // Fetch players for the game
+                const players = await supabaseService.getPlayersInGame(gameSession.gameId);
+                const game: GameWithPlayers = {
+                  ...gameSession,
+                  players: players.map((p: any) => ({
+                    userId: p.user_id,
+                    username: p.players.username,
+                  })),
+                };
                 patchState(store, {
                   currentGame: game,
                   loading: false,
@@ -160,9 +187,23 @@ export const GameStore = signalStore(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap((gameId) =>
-          http.get<GameWithPlayers>(`/api/game/${gameId}`).pipe(
+          from(supabaseService.getGameState(gameId)).pipe(
             tapResponse({
-              next: (game) => {
+              next: async (gameState: any) => {
+                const players = await supabaseService.getPlayersInGame(gameId);
+                const game: GameWithPlayers = {
+                  gameId: gameState.game.game_id,
+                  gameCode: gameState.game.game_code,
+                  randoCardrissian: gameState.game.rando_cardrissian,
+                  scoreLimit: gameState.game.score_limit,
+                  isHost: false, // Will be determined by auth
+                  gameState: gameState.game.game_state,
+                  createdAt: gameState.game.created_at,
+                  players: players.map((p: any) => ({
+                    userId: p.user_id,
+                    username: p.players.username,
+                  })),
+                };
                 patchState(store, {
                   currentGame: game,
                   loading: false,
@@ -183,14 +224,15 @@ export const GameStore = signalStore(
 
     /**
      * Fetch list of games (for lobby list)
+     * Note: This would require a new query or Edge Function in production
      */
     fetchGames: rxMethod<void>(
       pipe(
         tap(() => patchState(store, { loading: true, error: null })),
         switchMap(() =>
-          http.get<GameSession[]>('/api/game').pipe(
+          from(Promise.resolve([])).pipe(
             tapResponse({
-              next: (games) => {
+              next: (games: GameSession[]) => {
                 patchState(store, {
                   games,
                   loading: false,
