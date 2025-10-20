@@ -61,11 +61,11 @@ libs/
 - ✅ Create migration branch
 
 ### Phase 1: Nx & Angular Upgrade (Week 1)
-- Update Nx to v21.6.4
-- Upgrade Angular 17 → 20.3.4
-- Migrate to control flow syntax (@if, @for)
-- Update dependencies
-- Verify frontend still works with existing backend
+- ✅ Update Nx to v21.6.5
+- ✅ Upgrade Angular 17 → 20.3.6
+- ✅ Migrate to control flow syntax (@if, @for)
+- ✅ Update dependencies
+- ✅ Verify frontend still works with existing backend
 
 ### Phase 2: Add NgRx SignalStore (Week 2)
 - Install @ngrx/signals
@@ -704,8 +704,8 @@ git push origin main-rollback --force
 
 | Phase | Duration | Status |
 |-------|----------|--------|
-| Phase 0: Preparation | 2 days | ⏳ In Progress |
-| Phase 1: Nx & Angular Upgrade | 3 days | ⏹ Not Started |
+| Phase 0: Preparation | 2 days | ✅ Complete |
+| Phase 1: Nx & Angular Upgrade | 3 days | ✅ Complete |
 | Phase 2: Add NgRx SignalStore | 4 days | ⏹ Not Started |
 | Phase 3: Move to Supabase | 7 days | ⏹ Not Started |
 | Phase 4: Remove NestJS | 2 days | ⏹ Not Started |
