@@ -68,11 +68,13 @@ libs/
 - ✅ Verify frontend still works with existing backend
 
 ### Phase 2: Add NgRx SignalStore (Week 2)
-- Install @ngrx/signals
-- Create SignalStore architecture
-- Implement game state management
-- Implement player state management
-- Migrate from existing state management
+- ✅ Install @ngrx/signals
+- ✅ Create SignalStore architecture
+- ✅ Implement auth state management
+- ✅ Implement player state management
+- ✅ Implement game state management
+- ✅ Implement round state management
+- ✅ Implement card state management
 
 ### Phase 3: Move Backend Logic to Supabase (Week 2-3)
 - Create Supabase Edge Functions for complex logic
@@ -706,7 +708,7 @@ git push origin main-rollback --force
 |-------|----------|--------|
 | Phase 0: Preparation | 2 days | ✅ Complete |
 | Phase 1: Nx & Angular Upgrade | 3 days | ✅ Complete |
-| Phase 2: Add NgRx SignalStore | 4 days | ⏹ Not Started |
+| Phase 2: Add NgRx SignalStore | 4 days | ✅ Complete |
 | Phase 3: Move to Supabase | 7 days | ⏹ Not Started |
 | Phase 4: Remove NestJS | 2 days | ⏹ Not Started |
 | Phase 5: Testing & Docs | 4 days | ⏹ Not Started |
